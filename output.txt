@@ -1,4 +1,4 @@
-document3
+document3 is the most relevant document
 ranking of the documents
 document3 rank is 1
 document2 rank is 2
