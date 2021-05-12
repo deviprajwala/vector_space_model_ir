@@ -205,7 +205,8 @@ def main():
     #function call to read and separate the name of the documents and the terms present in it to a separate list  from the data frame and also create a dictionary which 
     #has the name of the document as key and the terms present in it as the list of strings  which is the value of the key
 
-    compute_weight(rows, cols )  
+    compute_weight(rows, cols ) 
+    #Function to compute the weight for each of the terms in the document. Here the weight is calculated with the help of term frequency and inverse document frequency
 
     print("Enter the query")
     query = input()
