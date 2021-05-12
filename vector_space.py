@@ -89,12 +89,63 @@ def compute_weight( doc_count, cols ):
         vec_dic.update({i:copy})
         dummy_list.clear()
 
-
-
-    print(term_freq)
-    print(idf)
-    print(vec_dic)
+def  get_weight_for_query(query):
+    query_freq ={}
+    for i in terms:
+        if i not in query_freq:
+            query_freq.update( { i : 0 } )
     
+    for val in query:
+        if val in query_freq:
+                query_freq[val] += 1
+  
+    
+
+    for i in query_freq:
+        query_freq[i] =  query_freq[i]/4
+    
+    
+    return query_freq
+    #return the query vector which is obtained in the boolean form        
+
+def similarity_computation(query_weight):
+    numerator =0
+    denomi1 = 0
+    denomi2 = 0
+    similarity ={}
+    for document in dicti:
+        for terms in dicti[document]:
+            numerator += weight[terms] * query_weight[terms]
+            denomi1 += weight[terms] * weight[terms]
+            denomi2 += query_weight[terms] * query_weight[terms]
+        
+        if denomi1 !=0  and denomi2 != 0:
+            simi = numerator / (math.sqrt(denomi1) * math.sqrt(denomi2))
+            similarity.update({document : simi})
+            numerator = 0
+            denomi2 = 0
+            denomi1 =0
+    return (similarity)   
+
+def prediction(similarity,doc_count):
+    #print(similarity)
+    with open('output.txt', 'w') as f:
+        with redirect_stdout( f ):
+            #to redirect the output to a text file
+            ans = max( similarity, key = similarity.get )
+            print(ans)
+
+            #print( ans, "is the most relevant document for the given query" )
+            #to print the name of the document which is most relevant
+
+            print( "ranking of the documents" )
+            for i in range(doc_count):
+                ans = max( similarity, key= lambda x: similarity[x])
+                print(ans, "rank is", i+1)
+                similarity.pop(ans)
+
+            
+
 def main():
     documents = pandas.read_csv(r'documents.csv')
     #to read the data from the csv file as a dataframe
@@ -109,6 +160,20 @@ def main():
     #function call to read and separate the name of the documents and the terms present in it to a separate list  from the data frame and also create a dictionary which 
     #has the name of the document as key and the terms present in it as the list of strings  which is the value of the key
 
-    compute_weight(rows, cols )      
+    compute_weight(rows, cols )  
+
+    print("Enter the query")
+    query = input()
+    #to get the query input from the user, the below input is given for obtaining the output as in output.txt file
+    #hockey is a national sport
+
+    query=query.split(' ')
+    #spliting the query as a list of strings
+    
+    query_weight = get_weight_for_query(query)
+    #print(query_weight)
+    similarity = similarity_computation(query_weight)
+    
+    prediction(similarity, rows)
 
 main()
